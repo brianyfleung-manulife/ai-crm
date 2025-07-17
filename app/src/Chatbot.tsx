@@ -11,7 +11,11 @@ interface Message {
   timestamp: Date;
 }
 
-const Chatbot: React.FC = () => {
+interface ChatbotProps {
+  onFilterResult?: (customers: any[]) => void;
+}
+
+const Chatbot: React.FC<ChatbotProps> = ({ onFilterResult }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       text: "Hello! I'm your AI CRM assistant. How can I help you today?",
@@ -55,13 +59,15 @@ const Chatbot: React.FC = () => {
       });
 
       const data = await response.json();
-      
+      // If the response contains a customers array, call the callback
+      if (data.customers && Array.isArray(data.customers) && onFilterResult) {
+        onFilterResult(data.customers);
+      }
       const botMessage: Message = {
         text: data.response,
         from: 'bot',
         timestamp: new Date()
       };
-
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       const errorMessage: Message = {

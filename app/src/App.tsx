@@ -1,10 +1,26 @@
-
-import Chatbot from './Chatbot'
-import { DataTable } from './DataTable'
-import { columns } from './components/ui/columns'
-import { customers } from './data/mock-data'
+import React from 'react';
+import Chatbot from './Chatbot';
+import { DataTable } from './DataTable';
+import { columns } from './components/ui/columns';
 
 function App() {
+  const [data, setData] = React.useState<any[]>([])
+  const [loading, setLoading] = React.useState(true)
+  const [error, setError] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    setLoading(true)
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+    fetch(`${apiUrl}/customers`)
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch')
+        return res.json()
+      })
+      .then(setData)
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false))
+  }, [])
+
   return (
     <div className="">
       <header>
@@ -13,9 +29,15 @@ function App() {
 
       <main className="grid grid-cols-[1fr_400px]">
         <div className="overflow-x-auto w-full">
-          <DataTable columns={columns} data={customers} />
+          {loading ? (
+            <div>Loading...</div>
+          ) : error ? (
+            <div className="text-red-500">{error}</div>
+          ) : (
+            <DataTable columns={columns} data={data} />
+          )}
         </div>
-        <Chatbot />
+        <Chatbot onFilterResult={setData} />
       </main>
     </div>
   )
