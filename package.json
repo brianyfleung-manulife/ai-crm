@@ -1,0 +1,30 @@
+{
+  "name": "ai-crm-chatbot",
+  "version": "1.0.0",
+  "description": "AI CRM Chatbot with FastAPI and React",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:app\"",
+    "dev:api": "cd api && python main.py",
+    "dev:app": "cd app && npm run dev",
+    "install:api": "cd api && pip install -r requirements.txt",
+    "install:app": "cd app && npm install",
+    "install:all": "npm run install:api && npm run install:app",
+    "build": "cd app && npm run build",
+    "start:api": "cd api && uvicorn main:app --host 0.0.0.0 --port 8000",
+    "start:app": "cd app && npm run preview"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "keywords": [
+    "ai",
+    "chatbot",
+    "fastapi",
+    "react",
+    "azure-openai",
+    "langchain",
+    "crm"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
