@@ -41,8 +41,12 @@ from routers import customers
 load_dotenv()
 
 
-app = FastAPI()
 
+# Create a sub-app for API and mount it under /api
+api_app = FastAPI()
+api_app.include_router(customers.router)
+
+app = FastAPI()
 # Add CORS middleware to allow React frontend to communicate with the backend
 app.add_middleware(
     CORSMiddleware,
@@ -52,8 +56,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include the customers router so /customers works
-app.include_router(customers.router)
+# Mount the API app under /api
+app.mount("/api", api_app)
 
 class Query(BaseModel):
     message: str
@@ -116,7 +120,7 @@ async def root():
 # Import the filter_customers function from the customers router
 from routers.customers import filter_customers
 
-@app.post("/chatbot/")
+@api_app.post("/chatbot/")
 async def get_response(query: Query):
     # Step 1: Try to extract filter params from the message
     filters = extract_customer_filters_from_message(query.message)
