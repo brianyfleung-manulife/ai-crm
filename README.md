@@ -71,6 +71,12 @@ You need to install:
    ```bash
    pip install -r requirements.txt
    ```
+
+   ***For Windows User***
+   ```Please run below commands after activating venv (step4)
+      pip install --upgrade certifi
+      pip install python-certifi-win32
+   ```
 6. Add your Azure credentials:
    - Open the `api` folder and create a file named `.env` (see the example in this README below).
    - Fill in your Azure details.
