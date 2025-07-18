@@ -35,7 +35,11 @@ from langchain_openai import AzureChatOpenAI
 from langchain.schema import HumanMessage
 from dotenv import load_dotenv
 from routers import customers
+import certifi
 
+# Set certificate bundle path
+os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
+os.environ['SSL_CERT_FILE'] = certifi.where()
 
 # Load environment variables from .env file
 load_dotenv()
