@@ -6,9 +6,6 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import requests
-from langchain_openai import AzureChatOpenAI
-from langchain.schema import HumanMessage
 from dotenv import load_dotenv
 from routers import customers
 from routers import chatbot
@@ -42,17 +39,9 @@ app.add_middleware(
 # Mount the API app under /api
 app.mount("/api", api_app)
 
-# OpenAI client utility
-from utils.openai_client import initialize_chat_client
-# Message processing utility
-from utils.openai_message import process_message
-
 @app.get("/")
 async def root():
     return {"message": "AI CRM Chatbot API is running!"}
-
-
-
 
 
 if __name__ == "__main__":

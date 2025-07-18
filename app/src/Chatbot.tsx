@@ -55,7 +55,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onFilterResult }) => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ message: input })
+        body: JSON.stringify({ messages: [input], thread_id: "MOCK" })
       });
 
       const data = await response.json();

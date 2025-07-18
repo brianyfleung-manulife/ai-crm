@@ -1,6 +1,7 @@
 import os
 import requests
 from langchain_openai import AzureChatOpenAI
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 def get_azure_ad_token():
     tenant_id = os.getenv("AZURE_TENANT_ID")
@@ -31,11 +32,21 @@ def initialize_chat_client():
         "Ocp-Apim-Subscription-Key": subscription_key
     }
 
-    chat = AzureChatOpenAI(
+    llm = AzureChatOpenAI(
         azure_endpoint=azure_endpoint,
         azure_deployment=deployment_name,
         api_version=api_version,
         openai_api_key="dummy-key",
         default_headers=custom_headers
     )
+
+    prompt_template = ChatPromptTemplate.from_messages(
+    [
+        ("system", "{system_message}"),
+        MessagesPlaceholder("messages")
+    ]
+)
+
+    chat = prompt_template | llm
+
     return chat
