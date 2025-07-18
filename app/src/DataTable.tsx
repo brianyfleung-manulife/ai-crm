@@ -11,21 +11,26 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { Button } from "./components/ui/button"
-import { Input } from "./components/ui/input"
+import { Textarea } from "./components/ui/textarea"
+
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
 }
 
+
 export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [searchInput, setSearchInput] = React.useState("");
+  const [tableData, setTableData] = React.useState<TData[]>(data);
+  const [isSearching, setIsSearching] = React.useState(false);
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -41,25 +46,43 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       columnVisibility,
       rowSelection,
     },
-  })
+  });
+
+  const handleSearch = async () => {
+    if (!searchInput.trim()) return;
+    setIsSearching(true);
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const response = await fetch(`${apiUrl}/customers/filter`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: searchInput })
+      });
+      const result = await response.json();
+      if (Array.isArray(result)) {
+        setTableData(result);
+      }
+    } catch (error) {
+      console.error("Error fetching filtered customers:", error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   return (
     <div>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
+      {/* Free text search input for customer filter */}
+      <div className="flex gap-2 mb-4">
+        <Textarea
+          value={searchInput}
+          onChange={e => setSearchInput(e.target.value)}
+          placeholder="Enter filter queries like 'aum < 10'"
+          disabled={isSearching}
         />
-        <Button
-          variant="outline"
-          className="ml-auto"
-          onClick={() => table.resetColumnFilters()}
-        >
-          Reset
+        <Button onClick={handleSearch} disabled={!searchInput.trim() || isSearching}>
+          {isSearching ? 'Searching...' : 'Search'}
         </Button>
       </div>
       <div className="rounded-md border">

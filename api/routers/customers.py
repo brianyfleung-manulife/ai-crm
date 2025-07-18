@@ -2,6 +2,11 @@ from fastapi import APIRouter, Query
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
+from utils.customer_filters import extract_customer_filters_from_message
+
+# Request model for /filter endpoint
+class MessageRequest(BaseModel):
+    message: str
 
 router = APIRouter(prefix="/customers", tags=["customers"])
 
@@ -98,3 +103,15 @@ def get_customers(
         age_min=age_min,
         age_max=age_max,
     )
+
+@router.post("/filter", response_model=List[Customer])
+def filter_customers_by_message(request: MessageRequest):
+    """
+    Endpoint to filter customers based on free text input.
+    """
+    filters = extract_customer_filters_from_message(request.message)
+    if filters:
+        allowed_keys = {"search", "sort_by", "sort_dir", "gender", "riskProfile", "aum_min", "aum_max", "age_min", "age_max"}
+        filter_args = {k: v for k, v in filters.items() if k in allowed_keys}
+        return filter_customers(**filter_args)
+    return []

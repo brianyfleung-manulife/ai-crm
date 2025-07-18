@@ -88,6 +88,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onFilterResult }) => {
     }
   };
 
+
   const TypingIndicator = () => (
     <div className="flex space-x-1">
       <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
@@ -107,6 +108,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ onFilterResult }) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
+
         {/* Messages Container */}
         <div className="h-[400px] overflow-y-auto space-y-2">
           {messages.map((msg, index) => (
